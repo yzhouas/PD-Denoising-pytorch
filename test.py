@@ -128,7 +128,7 @@ def main():
         elif opt.real_n == 1 or opt.real_n == 2:  #testing real noisy images
             noisy_img = Img
         elif opt.spat_n == 1:
-            noisy_img = generate_spatial_variant_noise(Img)
+            noisy_img = generate_noisy(Img, 2, 0, 20, 40)
         INoisy = np2ts(noisy_img, opt.color)
         INoisy = torch.clamp(INoisy, 0., 1.)
         True_Res = INoisy - ISource
