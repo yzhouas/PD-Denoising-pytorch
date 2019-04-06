@@ -7,7 +7,7 @@ Discriminative learning based image denoisers have achieved promising performanc
 ## Network Structure
 
 ![Image of Network](fig/structure.pdf)
-
+<img src="fig/structure.pdf" width="1000px"/>
 ## Pixel-Shuffle Down-sampling
 
 ## Testing
