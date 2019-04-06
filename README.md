@@ -4,7 +4,7 @@
 
 # PD-Denoising
 ### [PyTorch](https://github.com/yzhouas/PD-Denoising-pytorch) |[paper]()
-This is the official pytorch implementation of the paper 'When AWGN-based Denoiser Meets Real Noises', and parts of the code is initialized from the pytorch implementation of DnCNN. [DnCNN-pytorch](https://github.com/SaoYan/DnCNN-PyTorch). We revised the basis model structure and data generation process, and rewrote the testing procedure to make it work for real noisy images. More details will be found in the code implementation.
+This is the official pytorch implementation of the paper 'When AWGN-based Denoiser Meets Real Noises', and parts of the code are initialized from the pytorch implementation of DnCNN. [DnCNN-pytorch](https://github.com/SaoYan/DnCNN-PyTorch). We revised the basis model structure and data generation process, and rewrote the testing procedure to make it work for real noisy images. More details can be found in the code implementation.
 
 ## Abstract
 Discriminative learning based image denoisers have achieved promising performance on synthetic noise such as the additive Gaussian noise. However, their performance on images with real noise is often not satisfactory. The main reason is that real noises are mostly spatially/channel-correlated and spatial/channel-variant. In contrast, the synthetic Additive White Gaussian Noise (AWGN) adopted in most previous work is pixel-independent. In this paper, we propose a novel approach to boost the performance of a real image denoiser which is trained only with synthetic pixel-independent noise data. First, we train a deep model that consists of a noise estimator and a denoiser with mixed AWGN and Random Value Impulse Noise (RVIN). We then investigate Pixel-shuffle Down-sampling (PD) strategy to adapt the trained model to real noises. Extensive experiments demonstrate the effectiveness and generalization ability of the proposed approach. Notably, our method achieves state-of-the-art performance on real sRGB images in the DND benchmark. 
@@ -45,279 +45,69 @@ arxiv: [Pending]()
 
 ## Train
 ### Data Preparation
+* Please follow [DnCNN-pytorch](https://github.com/SaoYan/DnCNN-PyTorch) to generate training data of gray image model. 
+* For color images, you can save your images inside the train_c folder and process it to train_c.h5 by setting preprocess=1. In the paper, we used CBSD(500-68) as the training data set. Training data can be downloaded [here](http://web.archive.org/web/20160306133802/http://www.eecs.berkeley.edu/Research/Projects/CS/vision/grouping/resources.html#bsds500)
 * If you've already built the training and validation dataset (i.e. train.h5 & val.h5 files), set *preprocess* to be False.
-* According to the paper, DnCNN-S has 17 layers.
-* *noiseL* is used for training and *val_noiseL* is used for validation. They should be set to the same value for unbiased validation. You can set whatever noise level you need.
 
-### 2. Train DnCNN-S (DnCNN with known noise level)
+### Train the Baseline Model
+The baseline model is the one without explicit noise estimation. We directly trained the model with AWGN, RVIN and mixed-AWGN-RVIN.
 ```
 python train.py \
-  --preprocess True \
-  --num_of_layers 17 \
-  --mode S \
-  --noiseL 25 \
-  --val_noiseL 25
+  --preprocess 1\
+  --num_of_layers 20\
+  --mode B\
+  --color 0\
+  --outf logs/baseline_model
 ```
-**NOTE**
-
-
-### 3. Train DnCNN-B (DnCNN with blind noise level)
+### Train the Basis Model with Noise Estimation
 ```
 python train.py \
-  --preprocess True \
+  --preprocess 1\
   --num_of_layers 20 \
-  --mode B \
-  --val_noiseL 25
+  --mode MC\
+  --color 0\
+  --outf logs/gray_MC_model
+```
+You can also directly run
+```
+bash run_train.sh
 ```
 **NOTE**
-* If you've already built the training and validation dataset (i.e. train.h5 & val.h5 files), set *preprocess* to be False.
-* According to the paper, DnCNN-B has 20 layers.
-* *noiseL* is ingnored when training DnCNN-B. You can set *val_noiseL* to whatever you need.
+* For color version, directly set the color option to 1, and change the output folder name.
+* The layer number of estimation model is default 3.
 
-### 4. Test
+
+### Test on Pretrained model
+We provide the pretrained model saved in the logs folder. 
+To replicate the denoising results on real images in DND benchmark and other real images, simply run
 ```
-python test.py \
-  --num_of_layers 17 \
-  --logdir logs/DnCNN-S-15 \
-  --test_data Set12 \
-  --test_noiseL 15
+python test.py\
+ --scale 1\
+ --ps 2 --ps_scale 2\
+ --real 1\
+ --k 1\
+ --mode MC\
+ --color 1\
+ --output_map 0\
+ --zeroout 0 --keep_ind 0\
+ --num_of_layers 20\
+ --delog logs/logs_color_MC_AWGN_RVIN\
+ --cond 1 --refine 0 --refine_opt 1\
+ --test_data real_night\
+ --out_dir results/real_night
 ```
+or simiply run,
+```
+bash run_test_on_real_patches.sh
+```
+
 **NOTE**
-* Set *num_of_layers* to be 17 when testing DnCNN-S models. Set *num_of_layers* to be 20 when testing DnCNN-B model.
-* *test_data* can be *Set12* or *Set68*.
-* *test_noiseL* is used for testing. This should be set according to which model your want to test (i.e. *logdir*).
-
-## Test Results
-
-### BSD68 Average RSNR
-
-| Noise Level | DnCNN-S | DnCNN-B | DnCNN-S-PyTorch | DnCNN-B-PyTorch |
-|:-----------:|:-------:|:-------:|:---------------:|:---------------:|
-|     15      |  31.73  |  31.61  |      31.71      |      31.60      |
-|     25      |  29.23  |  29.16  |      29.21      |      29.15      |
-|     50      |  26.23  |  26.23  |      26.22      |      26.20      |
-
-### Set12 Average PSNR
-
-| Noise Level | DnCNN-S | DnCNN-B | DnCNN-S-PyTorch | DnCNN-B-PyTorch |
-|:-----------:|:-------:|:-------:|:---------------:|:---------------:|
-|     15      | 32.859  | 32.680  |     32.837      |     32.725      |
-|     25      | 30.436  | 30.362  |     30.404      |     30.344      |
-|     50      | 27.178  | 27.206  |     27.165      |     27.138      |
-
-## Tricks useful for boosting performance
-* Parameter initialization:  
-Use *kaiming_normal* initialization for *Conv*; Pay attention to the initialization of *BatchNorm*
-```
-def weights_init_kaiming(m):
-    classname = m.__class__.__name__
-    if classname.find('Conv') != -1:
-        nn.init.kaiming_normal(m.weight.data, a=0, mode='fan_in')
-    elif classname.find('Linear') != -1:
-        nn.init.kaiming_normal(m.weight.data, a=0, mode='fan_in')
-    elif classname.find('BatchNorm') != -1:
-        m.weight.data.normal_(mean=0, std=math.sqrt(2./9./64.)).clamp_(-0.025,0.025)
-        nn.init.constant(m.bias.data, 0.0)
-```
-* The definition of loss function  
-Set *size_average* to be False when defining the loss function. When *size_average=True*, the **pixel-wise average** will be computed, but what we need is **sample-wise average**.
-```
-criterion = nn.MSELoss(size_average=False)
-```
-The computation of loss will be like:
-```
-loss = criterion(out_train, noise) / (imgn_train.size()[0]*2)
-```
-where we divide the sum over one batch of samples by *2N*, with *N* being # samples.
-
-<img src='imgs/horse2zebra.gif' align="right" width=384>
-
-<br><br><br>
-
-# CycleGAN
-### [PyTorch](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix) | [project page](https://junyanz.github.io/CycleGAN/) |   [paper](https://arxiv.org/pdf/1703.10593.pdf)
-
-Torch implementation for learning an image-to-image translation (i.e. [pix2pix](https://github.com/phillipi/pix2pix)) **without** input-output pairs, for example:
-
-
-
-<img src="https://junyanz.github.io/CycleGAN/images/teaser_high_res.jpg" width="1000px"/>
-
-[Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networks](https://junyanz.github.io/CycleGAN/)  
- [Jun-Yan Zhu](https://people.eecs.berkeley.edu/~junyanz/)\*,  [Taesung Park](https://taesung.me/)\*, [Phillip Isola](http://web.mit.edu/phillipi/), [Alexei A. Efros](https://people.eecs.berkeley.edu/~efros/)  
- Berkeley AI Research Lab, UC Berkeley  
- In ICCV 2017. (* equal contributions)  
-
-This package includes CycleGAN, [pix2pix](https://github.com/phillipi/pix2pix), as well as other methods like [BiGAN](https://arxiv.org/abs/1605.09782)/[ALI](https://ishmaelbelghazi.github.io/ALI/) and Apple's paper [S+U learning](https://arxiv.org/pdf/1612.07828.pdf).  
-The code was written by [Jun-Yan Zhu](https://github.com/junyanz) and [Taesung Park](https://github.com/taesung).  
-**Update**: Please check out [PyTorch](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix) implementation for CycleGAN and pix2pix.
-The PyTorch version is under active development and can produce results comparable or better than this Torch version.
-
-
-
-## Prerequisites
-- Linux or OSX
-- NVIDIA GPU + CUDA CuDNN (CPU mode and CUDA without CuDNN may work with minimal modification, but untested)
-- For MAC users, you need the Linux/GNU commands `gfind` and `gwc`, which can be installed with `brew install findutils coreutils`.
-
-## Getting Started
-### Installation
-- Install torch and dependencies from https://github.com/torch/distro
-- Install torch packages `nngraph`, `class`, `display`
-```bash
-luarocks install nngraph
-luarocks install class
-luarocks install https://raw.githubusercontent.com/szym/display/master/display-scm-0.rockspec
-```
-- Clone this repo:
-```bash
-git clone https://github.com/junyanz/CycleGAN
-cd CycleGAN
-```
-
-### Apply a Pre-trained Model
-- Download the test photos (taken by [Alexei Efros](https://www.flickr.com/photos/aaefros)):
-```
-bash ./datasets/download_dataset.sh ae_photos
-```
-- Download the pre-trained model `style_cezanne` (For CPU model, use `style_cezanne_cpu`):
-```
-bash ./pretrained_models/download_model.sh style_cezanne
-```
-- Now, let's generate Paul Cézanne style images:
-```
-DATA_ROOT=./datasets/ae_photos name=style_cezanne_pretrained model=one_direction_test phase=test loadSize=256 fineSize=256 resize_or_crop="scale_width" th test.lua
-```
-The test results will be saved to `./results/style_cezanne_pretrained/latest_test/index.html`.  
-Please refer to [Model Zoo](#model-zoo) for more pre-trained models.
-`./examples/test_vangogh_style_on_ae_photos.sh` is an example script that downloads the pretrained Van Gogh style network and runs it on Efros's photos.
-
-### Train
-- Download a dataset (e.g. zebra and horse images from ImageNet):
-```bash
-bash ./datasets/download_dataset.sh horse2zebra
-```
-- Train a model:
-```bash
-DATA_ROOT=./datasets/horse2zebra name=horse2zebra_model th train.lua
-```
-- (CPU only) The same training command without using a GPU or CUDNN. Setting the environment variables ```gpu=0 cudnn=0``` forces CPU only
-```bash
-DATA_ROOT=./datasets/horse2zebra name=horse2zebra_model gpu=0 cudnn=0 th train.lua
-```
-- (Optionally) start the display server to view results as the model trains. (See [Display UI](#display-ui) for more details):
-```bash
-th -ldisplay.start 8000 0.0.0.0
-```
-
-### Test
-- Finally, test the model:
-```bash
-DATA_ROOT=./datasets/horse2zebra name=horse2zebra_model phase=test th test.lua
-```
-The test results will be saved to an HTML file here: `./results/horse2zebra_model/latest_test/index.html`.
-
-
-## Model Zoo
-Download the pre-trained models with the following script. The model will be saved to `./checkpoints/model_name/latest_net_G.t7`.
-```bash
-bash ./pretrained_models/download_model.sh model_name
-```
-- `orange2apple` (orange -> apple) and `apple2orange`: trained on ImageNet categories `apple` and `orange`.
-- `horse2zebra` (horse -> zebra) and `zebra2horse` (zebra -> horse): trained on ImageNet categories `horse` and `zebra`.
-- `style_monet` (landscape photo -> Monet painting style),  `style_vangogh` (landscape photo  -> Van Gogh painting style), `style_ukiyoe` (landscape photo  -> Ukiyo-e painting style), `style_cezanne` (landscape photo  -> Cezanne painting style): trained on paintings and Flickr landscape photos.
-- `monet2photo` (Monet paintings -> real landscape): trained on paintings and Flickr landscape photographs.
-- `cityscapes_photo2label` (street scene -> label) and `cityscapes_label2photo` (label -> street scene): trained on the Cityscapes dataset.
-- `map2sat` (map -> aerial photo) and `sat2map` (aerial photo -> map): trained on Google maps.
-- `iphone2dslr_flower` (iPhone photos of flowers -> DSLR photos of flowers): trained on Flickr photos.
-
-CPU models can be downloaded using:
-```bash
-bash pretrained_models/download_model.sh <name>_cpu
-```
-, where `<name>` can be `horse2zebra`, `style_monet`, etc. You just need to append `_cpu` to the target model.
-
-## Training and Test Details
-To train a model,  
-```bash
-DATA_ROOT=/path/to/data/ name=expt_name th train.lua
-```
-Models are saved to `./checkpoints/expt_name` (can be changed by passing `checkpoint_dir=your_dir` in train.lua).  
-See `opt_train` in `options.lua` for additional training options.
-
-To test the model,
-```bash
-DATA_ROOT=/path/to/data/ name=expt_name phase=test th test.lua
-```
-This will run the model named `expt_name` in both directions on all images in `/path/to/data/testA` and `/path/to/data/testB`.  
-A webpage with result images will be saved to `./results/expt_name` (can be changed by passing `results_dir=your_dir` in test.lua).  
-See `opt_test` in `options.lua` for additional test options. Please use `model=one_direction_test` if you only would like to generate outputs of the trained network in only one direction, and specify `which_direction=AtoB` or `which_direction=BtoA` to set the direction.
-
-There are other options that can be used. For example, you can specify `resize_or_crop=crop` option to avoid resizing the image to squares. This is indeed how we trained GTA2Cityscapes model in the projet [webpage](https://junyanz.github.io/CycleGAN/) and [Cycada](https://arxiv.org/pdf/1711.03213.pdf) model. We prepared the images at 1024px resolution, and used `resize_or_crop=crop fineSize=360` to work with the cropped images of size 360x360. We also used `lambda_identity=1.0`. 
-
-## Datasets
-Download the datasets using the following script. Many of the datasets were collected by other researchers. Please cite their papers if you use the data.
-```bash
-bash ./datasets/download_dataset.sh dataset_name
-```
-- `facades`: 400 images from the [CMP Facades dataset](http://cmp.felk.cvut.cz/~tylecr1/facade/). [[Citation](datasets/bibtex/facades.tex)]
-- `cityscapes`: 2975 images from the [Cityscapes training set](https://www.cityscapes-dataset.com/). [[Citation](datasets/bibtex/cityscapes.tex)]
-- `maps`: 1096 training images scraped from Google Maps.
-- `horse2zebra`: 939 horse images and 1177 zebra images downloaded from [ImageNet](http://www.image-net.org/) using the keywords `wild horse` and `zebra`
-- `apple2orange`: 996 apple images and 1020 orange images downloaded from [ImageNet](http://www.image-net.org/) using the keywords `apple` and `navel orange`.
-- `summer2winter_yosemite`: 1273 summer Yosemite images and 854 winter Yosemite images were downloaded using Flickr API. See more details in our paper.
-- `monet2photo`, `vangogh2photo`, `ukiyoe2photo`, `cezanne2photo`: The art images were downloaded from [Wikiart](https://www.wikiart.org/). The real photos are downloaded from Flickr using the combination of the tags *landscape* and *landscapephotography*. The training set size of each class is Monet:1074, Cezanne:584, Van Gogh:401, Ukiyo-e:1433, Photographs:6853.
-- `iphone2dslr_flower`: both classes of images were downloaded from Flickr. The training set size of each class is iPhone:1813, DSLR:3316. See more details in our paper.
-
-
-## Display UI
-Optionally, for displaying images during training and test, use the [display package](https://github.com/szym/display).
-
-- Install it with: `luarocks install https://raw.githubusercontent.com/szym/display/master/display-scm-0.rockspec`
-- Then start the server with: `th -ldisplay.start`
-- Open this URL in your browser: [http://localhost:8000](http://localhost:8000)
-
-By default, the server listens on localhost. Pass `0.0.0.0` to allow external connections on any interface:
-```bash
-th -ldisplay.start 8000 0.0.0.0
-```
-Then open `http://(hostname):(port)/` in your browser to load the remote desktop.
-
-## Setup Training and Test data
-To train CycleGAN model on your own datasets, you need to create a data folder with two subdirectories `trainA` and `trainB` that contain images from domain A and B. You can test your model on your training set by setting ``phase='train'`` in  `test.lua`. You can also create subdirectories `testA` and `testB` if you have test data.
-
-You should **not** expect our method to work on just any random combination of input and output datasets (e.g. `cats<->keyboards`). From our experiments, we find it works better if two datasets share similar visual content. For example, `landscape painting<->landscape photographs` works much better than `portrait painting <-> landscape photographs`. `zebras<->horses` achieves compelling results while `cats<->dogs` completely fails.  See the following section for more discussion.
-
-
-## Failure cases
-<img align="left" style="padding:10px" src="https://junyanz.github.io/CycleGAN/images/failure_putin.jpg" width=320>
-
-Our model does not work well when the test image is rather different from the images on which the model is trained, as is the case in the figure to the left (we trained on horses and zebras without riders, but test here one a horse with a rider).  See additional typical failure cases [here](https://junyanz.github.io/CycleGAN/images/failures.jpg). On translation tasks that involve color and texture changes, like many of those reported above, the method often succeeds. We have also explored tasks that require geometric changes, with little success. For example, on the task of `dog<->cat` transfiguration, the learned translation degenerates into making minimal changes to the input. We also observe a lingering gap between the results achievable with paired training data and those achieved by our unpaired method. In some cases, this gap may be very hard -- or even impossible,-- to close: for example, our method sometimes permutes the labels for tree and building in the output of the cityscapes photos->labels task.
-
-
-
-## Citation
-If you use this code for your research, please cite our [paper](https://junyanz.github.io/CycleGAN/):
-
-```
-@inproceedings{CycleGAN2017,
-  title={Unpaired Image-to-Image Translation using Cycle-Consistent Adversarial Networkss},
-  author={Zhu, Jun-Yan and Park, Taesung and Isola, Phillip and Efros, Alexei A},
-  booktitle={Computer Vision (ICCV), 2017 IEEE International Conference on},
-  year={2017}
-}
-
-```
-
-
-## Related Projects:
-[pix2pix](https://github.com/phillipi/pix2pix): Image-to-image translation using conditional adversarial nets  
-[iGAN](https://github.com/junyanz/iGAN): Interactive Image Generation via Generative Adversarial Networks
-
-## Cat Paper Collection
-If you love cats, and love reading cool graphics, vision, and ML papers, please check out the Cat Paper [Collection](https://github.com/junyanz/CatPapers).  
+* test_data can be changed to other folder name with your own data.
+* ps can be set to 1 to get the adaptive pixel-shuffle stride. For CCD camera images, it is better to be set to 2.
+* k can be interactively adjusted to balance the details and background, providing a flexibile denoising performance.
+* This version of testing script may cause exceeding memory issues in GPU while testing on large images. A testing_on_full image version will be released soon.
 
 
 ## Acknowledgments
-Code borrows from [pix2pix](https://github.com/phillipi/pix2pix) and [DCGAN](https://github.com/soumith/dcgan.torch). The data loader is modified from [DCGAN](https://github.com/soumith/dcgan.torch) and  [Context-Encoder](https://github.com/pathak22/context-encoder). The generative network is adopted from [neural-style](https://github.com/jcjohnson/neural-style) with [Instance Normalization](https://github.com/DmitryUlyanov/texture_nets/blob/master/InstanceNormalization.lua).
+Code borrows from [DnCNN-pytorch](https://github.com/SaoYan/DnCNN-PyTorch).
 
