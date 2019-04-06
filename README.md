@@ -17,6 +17,22 @@ The proposed blind denoising model G consists of a noise estimator E and a follo
 ### PD Adaptation
 The proposed Pixel-shuffle Down-sampling (PD) refinement strategy: (1) Compute the smallest stride s, which is 2 in this example and more CCD image cases, to match AWGN following the adaptation process, and pixel-shuffle the image into mosaic y_s; (2) Denoise y_s using G; (3) Refill each sub-image with noisy blocks separately and inversely pixel-shuffle them; (4) Denoise each refilled image again using G and average them to obtain the texture details T; (5) Combine the over-smoothed flat regions F to refine the final result. 
 
+## Denoising Performance on Real Images
+### DND Benchmark
+<img src="fig/dnd.png" width="1000px"/>
+
+### RNI15
+<img src="https://junyanz.github.io/CycleGAN/images/photo2painting.jpg" width="1000px"/>
+
+### Self-collected Night Photos
+<img src="https://junyanz.github.io/CycleGAN/images/objects.jpg" width="1000px"/>
+
+
+
+
+
+
+
 
 ## Implement Perceptual Loss Using MatConvnet
 The perceptual loss is the MSE loss between the [Perceptual Layer](https://github.com/GuoShi28/CBDNet/tree/master/utils/Perceptual_Layer) outputs of results and labels.
@@ -166,35 +182,6 @@ This package includes CycleGAN, [pix2pix](https://github.com/phillipi/pix2pix), 
 The code was written by [Jun-Yan Zhu](https://github.com/junyanz) and [Taesung Park](https://github.com/taesung).  
 **Update**: Please check out [PyTorch](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix) implementation for CycleGAN and pix2pix.
 The PyTorch version is under active development and can produce results comparable or better than this Torch version.
-
-## Other implementations:
-<p><a href="https://github.com/leehomyc/cyclegan-1"> [Tensorflow]</a> (by Harry Yang),
-<a href="https://github.com/architrathore/CycleGAN/">[Tensorflow]</a> (by Archit Rathore),
-<a href="https://github.com/vanhuyz/CycleGAN-TensorFlow">[Tensorflow]</a> (by Van Huy),
-<a href="https://github.com/XHUJOY/CycleGAN-tensorflow">[Tensorflow]</a> (by Xiaowei Hu), 
-<a href="https://github.com/LynnHo/CycleGAN-Tensorflow-Simple"> [Tensorflow-simple]</a> (by Zhenliang He),
-<a href="https://github.com/luoxier/CycleGAN_Tensorlayer"> [TensorLayer]</a> (by luoxier),
-<a href="https://github.com/Aixile/chainer-cyclegan">[Chainer]</a> (by Yanghua Jin),
-<a href="https://github.com/yunjey/mnist-svhn-transfer">[Minimal PyTorch]</a> (by yunjey),
-<a href="https://github.com/Ldpe2G/DeepLearningForFun/tree/master/Mxnet-Scala/CycleGAN">[Mxnet]</a> (by Ldpe2G),
-<a href="https://github.com/tjwei/GANotebooks">[lasagne/keras]</a> (by tjwei)</p>
-</ul>
-
-## Applications
-### Monet Paintings to Photos
-<img src="https://junyanz.github.io/CycleGAN/images/painting2photo.jpg" width="1000px"/>
-
-### Collection Style Transfer
-<img src="https://junyanz.github.io/CycleGAN/images/photo2painting.jpg" width="1000px"/>
-
-### Object Transfiguration
-<img src="https://junyanz.github.io/CycleGAN/images/objects.jpg" width="1000px"/>
-
-### Season Transfer
-<img src="https://junyanz.github.io/CycleGAN/images/season.jpg" width="1000px"/>
-
-### Photo Enhancement: Narrow depth of field
-<img src="https://junyanz.github.io/CycleGAN/images/photo_enhancement.jpg" width="1000px"/>
 
 
 
