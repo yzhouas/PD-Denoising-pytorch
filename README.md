@@ -1,3 +1,5 @@
+<img src='fig/teaser.png' align="right" width=384>
+<br><br><br>
 # PD-Denoising
 ### [PyTorch](https://github.com/yzhouas/PD-Denoising-pytorch) |[paper]()
 
