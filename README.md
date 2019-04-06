@@ -15,19 +15,8 @@ Discriminative learning based image denoisers have achieved promising performanc
 The proposed blind denoising model G consists of a noise estimator E and a follow-up non-blind denoiser R. It is trained on AWGN and RVIN. It can achieve the disentanglement of the two noises as shown.
 
 ### PD Adaptation
-The proposed Pixel-shuffle Down-sampling (PD) refinement strategy: (1) Compute the smallest stride s, which is 2 in this example and more CCD image cases, to match AWGN following the adaptation process, and pixel-shuffle the image into mosaic y_s; (2) Denoise y_s using G; (3) Refill each sub-image with noisy blocks separately and inversely pixel-shuffle them; (4) Denoise each refilled image again using G and average them to obtain the `texture details' T; (5) Combine the over-smoothed `flat regions' F to refine the final result. 
+The proposed Pixel-shuffle Down-sampling (PD) refinement strategy: (1) Compute the smallest stride s, which is 2 in this example and more CCD image cases, to match AWGN following the adaptation process, and pixel-shuffle the image into mosaic y_s; (2) Denoise y_s using G; (3) Refill each sub-image with noisy blocks separately and inversely pixel-shuffle them; (4) Denoise each refilled image again using G and average them to obtain the texture details T; (5) Combine the over-smoothed flat regions F to refine the final result. 
 
-
-
-
-## Testing
-* "Test_Patches.m" is the testing code for small images or image patches. If the tesing image is too large (e.g., 5760*3840), we recommend to use "Test_fullImage.m"
-*  "Test_fullImage.m" is the testing code for large images. 
-*  "Test_Realistic_Noise_Model.m" is the testing code for the realistic noise mode in our paper. And it's very convinent to utilize [AddNoiseMosai.m](https://github.com/GuoShi28/CBDNet/blob/master/utils/AddNoiseMosai.m) to train your own denoising model for real photographs.
-
-## CBDNet Models
-* "CBDNet.mat" is the testing model for DND dataset and NC12 dataset for not considering the JPEG compression.
-*  "CBDNet_JPEG.mat" is the testing model for Nam dataset and other noisy images with JPEG format.
 
 ## Implement Perceptual Loss Using MatConvnet
 The perceptual loss is the MSE loss between the [Perceptual Layer](https://github.com/GuoShi28/CBDNet/tree/master/utils/Perceptual_Layer) outputs of results and labels.
@@ -38,10 +27,6 @@ The pretrained vgg model, [fast-rcnn-vgg16-pascal07-dagnn](http://www.vlfeat.org
 Following the guided of [DND Online submission system](https://noise.visinf.tu-darmstadt.de/).
 
 ![Image of DND](figs/DND_results.png)
-
-### Nam dataset
-
-![Image of Nam](figs/Nam_results.png)
 
 ## Requirements and Dependencies
 * Matlab 2015b
