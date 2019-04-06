@@ -18,14 +18,14 @@ The proposed blind denoising model G consists of a noise estimator E and a follo
 The proposed Pixel-shuffle Down-sampling (PD) refinement strategy: (1) Compute the smallest stride s, which is 2 in this example and more CCD image cases, to match AWGN following the adaptation process, and pixel-shuffle the image into mosaic y_s; (2) Denoise y_s using G; (3) Refill each sub-image with noisy blocks separately and inversely pixel-shuffle them; (4) Denoise each refilled image again using G and average them to obtain the texture details T; (5) Combine the over-smoothed flat regions F to refine the final result. 
 
 ## Denoising Performance on Real Images
+### RNI15
+<img src="fig/rni15.png" width="1000px"/>
+
 ### DND Benchmark
 <img src="fig/dnd.png" width="1000px"/>
 
-### RNI15
-<img src="https://junyanz.github.io/CycleGAN/images/photo2painting.jpg" width="1000px"/>
-
 ### Self-collected Night Photos
-<img src="https://junyanz.github.io/CycleGAN/images/objects.jpg" width="1000px"/>
+<img src="fig/night.png" width="1000px"/>
 
 
 
