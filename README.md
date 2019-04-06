@@ -30,7 +30,7 @@ The proposed Pixel-shuffle Down-sampling (PD) refinement strategy: (1) Compute t
 
 ## Comparisons with state-of-the-arts
 We follow the submission guideline of DND benchmark to achieve the following results.
-<img src="fig/table.png" align="center" width="700px"/>
+<img src="fig/table.png" align="middle" width="700px"/>
 
 ## Requirements and Dependencies
 * [PyTorch](http://pytorch.org/)
