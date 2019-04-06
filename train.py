@@ -11,16 +11,12 @@ from torch.autograd import Variable
 from torch.utils.data import DataLoader
 from tensorboardX import SummaryWriter
 from models import *
-from memnet_model import MemNet
-from wdsra_model import WDSRA
 from dataset import prepare_data, Dataset
 from utils import *
 from PIL import Image
 import concurrent.futures
 
 #Basic Configuration
-#os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-#os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 #noise type to consider: Gaussian, Uniform, Possion, Salt and Pepper
 parser = argparse.ArgumentParser(description="mix-DnCNN")
 parser.add_argument("--preprocess", type=bool, default=False, help='run prepare_data or not')
@@ -32,7 +28,6 @@ parser.add_argument("--lr", type=float, default=1e-3, help="Initial learning rat
 parser.add_argument("--outf", type=str, default="logs", help='path of log files')
 parser.add_argument("--mode", type=str, default="MC", help='DnCNN-B (B) or AWGN-RVIN-MC(MC)')
 parser.add_argument("--color", type=int, default=1, help='DnCNN-B (B) or our mixed-denoisor(M)')
-
 
 
 opt = parser.parse_args()
@@ -47,13 +42,10 @@ def main():
     loader_train = DataLoader(dataset=dataset_train, num_workers=16, batch_size=opt.batchSize, shuffle=True)
     print("# of training samples: %d\n" % int(len(dataset_train)))
 
-    if opt.color == 0:
-        c = 1
-    elif opt.color == 1:
-        c = 3
+    c = 1 if opt.color == 0 else 3
     # Build model
     if opt.mode == "MC":
-        net = DnCNN(channels=c, num_of_layers=opt.num_of_layers, num_of_est = 2 * c)  #denoisor
+        net = DnCNN_c(channels=c, num_of_layers=opt.num_of_layers, num_of_est = 2 * c)  #denoisor
         est_net = Estimation_direct(c, 2 * c)  #estimator
         est_net.apply(weights_init_kaiming)
 
@@ -207,6 +199,7 @@ def main():
                     writer.add_scalar('estimation_loss', est_loss.item(), step)
                     writer.add_scalar('ground_denoising_loss', gen_loss.item(), step)
                 writer.add_scalar('PSNR on training data', psnr_train, step)
+            '''
             if step % 100 == 0:
                 model.eval()
                 if opt.mode == "MC":
@@ -214,10 +207,9 @@ def main():
                 psnr_val_b = 0
                 psnr_val_nb = 0
                 crit = 0.
+                #single image validation version, one can change it to the validation set
                 for k in range(1):
                     img_val = cv2.imread('data/Set12/12.png')
-                    #img_val = np.array( dataset_val[k].cpu().numpy() )
-                    #img_val = img_val.transpose(1,2,0)
                     img_w, img_h, _ = w, h, _ = img_val.shape
                     if opt.color == 0:
                        img_val = img_val[:,:,0]
@@ -251,7 +243,7 @@ def main():
 
                 writer.add_scalar('PSNR on validation data (blind)', psnr_val_b, epoch*len(loader_train) + i)
                 writer.add_scalar('PSNR on validation data (non_blind)', psnr_val_nb, epoch*len(loader_train) + i)
-
+            '''
             step += 1
             
         ## the end of each epoch
@@ -263,6 +255,6 @@ def main():
             torch.save(est_model.state_dict(), os.path.join(opt.outf, 'est_net.pth'))
 
 if __name__ == "__main__":
-    if opt.preprocess:
-        prepare_data(data_path='data', patch_size=50, stride=10, aug_times=2, color=1)
+    if opt.preprocess==1:
+        prepare_data(data_path='data', patch_size=50, stride=10, aug_times=2, color=opt.color)
     main()

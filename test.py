@@ -174,10 +174,9 @@ def main():
         del max_Res
         del max_NM_tensor
         
-        if opt.ps == 1 and pss!=1:  #pixelshuffle multi-scale
+        if (opt.ps == 1 or opt.ps == 2) and pss!=1:  #pixelshuffle multi-scale
             #create batch of images with one subsitution
             mosaic_den = visual_va2np(Out, opt.color, 1, pss, 1, opt.rescale, w, h, c)
-            cv2.imwrite(os.path.join(opt.out_dir, file_name + '_direct_inverse.png'), mosaic_den[:,:,::-1])
             out_numpy = np.zeros((pss ** 2, c, w, h))
             #compute all the images in the ps scale set
             for row in range(pss):
