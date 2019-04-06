@@ -4,6 +4,7 @@
 
 # PD-Denoising
 ### [PyTorch](https://github.com/yzhouas/PD-Denoising-pytorch) |[paper]()
+This is the official pytorch implementation of the paper 'When AWGN-based Denoiser Meets Real Noises', and parts of the code is initialized from the pytorch implementation of DnCNN. [DnCNN-pytorch](https://github.com/SaoYan/DnCNN-PyTorch). We revised the basis model structure and data generation process, and rewrote the testing procedure to make it work for real noisy images. More details will be found in the code implementation.
 
 ## Abstract
 Discriminative learning based image denoisers have achieved promising performance on synthetic noise such as the additive Gaussian noise. However, their performance on images with real noise is often not satisfactory. The main reason is that real noises are mostly spatially/channel-correlated and spatial/channel-variant. In contrast, the synthetic Additive White Gaussian Noise (AWGN) adopted in most previous work is pixel-independent. In this paper, we propose a novel approach to boost the performance of a real image denoiser which is trained only with synthetic pixel-independent noise data. First, we train a deep model that consists of a noise estimator and a denoiser with mixed AWGN and Random Value Impulse Noise (RVIN). We then investigate Pixel-shuffle Down-sampling (PD) strategy to adapt the trained model to real noises. Extensive experiments demonstrate the effectiveness and generalization ability of the proposed approach. Notably, our method achieves state-of-the-art performance on real sRGB images in the DND benchmark. 
@@ -27,55 +28,26 @@ The proposed Pixel-shuffle Down-sampling (PD) refinement strategy: (1) Compute t
 ### Self-collected Night Photos
 <img src="fig/night.png" width="1000px"/>
 
-
-
-
-
-
-
-
-## Implement Perceptual Loss Using MatConvnet
-The perceptual loss is the MSE loss between the [Perceptual Layer](https://github.com/GuoShi28/CBDNet/tree/master/utils/Perceptual_Layer) outputs of results and labels.
-The pretrained vgg model, [fast-rcnn-vgg16-pascal07-dagnn](http://www.vlfeat.org/matconvnet/pretrained/) is needed. 
-
-## Real Images Denoising Results
-### DND dataset
-Following the guided of [DND Online submission system](https://noise.visinf.tu-darmstadt.de/).
-
-![Image of DND](figs/DND_results.png)
+## Comparisons with state-of-the-arts
+<img src="fig/table.png" width="1000px"/>
 
 ## Requirements and Dependencies
-* Matlab 2015b
-* Cuda-8.0 & cuDNN v-5.1
-* [MatConvNet](http://www.vlfeat.org/matconvnet/).
+* [PyTorch](http://pytorch.org/)
+* [torchvision](https://github.com/pytorch/vision)
+* [tensorboardX](https://github.com/lanpa/tensorboard-pytorch) 
+* OpenCV
+* [HDF5 for Python](http://www.h5py.org/)
 
 ## Citation
-arxiv: [https://arxiv.org/abs/1807.04686](https://arxiv.org/abs/1807.04686)
+arxiv: [Pending]()
 ```
-@article{Guo2019Cbdnet,
-  title={Toward convolutional blind denoising of real photographs},
-  author={Guo, Shi and Yan, Zifei and Zhang, Kai and Zuo, Wangmeng and Zhang, Lei},
-  journal={2019 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
-  year={2019}
-}
 ```
-# DnCNN-PyTorch
 
-This is a PyTorch implementation of the TIP2017 paper [*Beyond a Gaussian Denoiser: Residual Learning of Deep CNN for Image Denoising*](http://ieeexplore.ieee.org/document/7839189/). The author's [MATLAB implementation is here](https://github.com/cszn/DnCNN).
-
-****
-This code was written with PyTorch<0.4, but most people must be using PyTorch>=0.4 today. Migrating the code is easy. Please refer to [PyTorch 0.4.0 Migration Guide](https://pytorch.org/blog/pytorch-0_4_0-migration-guide/).
-
-****
-
-## How to run
-
-### 1. Dependences
-* [PyTorch](http://pytorch.org/)(<0.4)
-* [torchvision](https://github.com/pytorch/vision)
-* OpenCV for Python
-* [HDF5 for Python](http://www.h5py.org/)
-* [tensorboardX](https://github.com/lanpa/tensorboard-pytorch) (TensorBoard for PyTorch)
+## Train
+### Data Preparation
+* If you've already built the training and validation dataset (i.e. train.h5 & val.h5 files), set *preprocess* to be False.
+* According to the paper, DnCNN-S has 17 layers.
+* *noiseL* is used for training and *val_noiseL* is used for validation. They should be set to the same value for unbiased validation. You can set whatever noise level you need.
 
 ### 2. Train DnCNN-S (DnCNN with known noise level)
 ```
@@ -87,9 +59,7 @@ python train.py \
   --val_noiseL 25
 ```
 **NOTE**
-* If you've already built the training and validation dataset (i.e. train.h5 & val.h5 files), set *preprocess* to be False.
-* According to the paper, DnCNN-S has 17 layers.
-* *noiseL* is used for training and *val_noiseL* is used for validation. They should be set to the same value for unbiased validation. You can set whatever noise level you need.
+
 
 ### 3. Train DnCNN-B (DnCNN with blind noise level)
 ```
