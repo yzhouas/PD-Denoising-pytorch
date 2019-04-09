@@ -3,7 +3,7 @@
 <br><br><br>
 
 # PD-Denoising
-### [PyTorch](https://github.com/yzhouas/PD-Denoising-pytorch) |[Tech Report]()
+### [PyTorch](https://github.com/yzhouas/PD-Denoising-pytorch) |[Tech Report](https://arxiv.org/abs/1904.03485)
 This is the official pytorch implementation of the paper 'When AWGN-based Denoiser Meets Real Noises', and parts of the code are initialized from the pytorch implementation of [DnCNN-pytorch](https://github.com/SaoYan/DnCNN-PyTorch). We revised the basis model structure and data generation process, and rewrote the testing procedure to make it work for real noisy images. More details can be found in the code implementation.
 
 ## Abstract
@@ -40,8 +40,14 @@ We follow the submission guideline of DND benchmark to achieve the following res
 * [HDF5 for Python](http://www.h5py.org/)
 
 ## Citation
-arxiv: [Pending]()
+If you think our model and code useful, please cite
 ```
+@article{zhou2019when,
+  title={When AWGN-based Denoiser Meets Real Noises},
+  author={Zhou, Yuqian and Jiao, Jianbo and Huang, Haibin and Wang, Yang and Wang, Jue, and Shi, Honghui and Huang, Thomas},
+  journal={arXiv preprint arXiv:1904.03485},
+  year={2019}
+}
 ```
 
 ## Train
