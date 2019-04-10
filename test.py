@@ -225,6 +225,7 @@ def main():
             psnr = batch_PSNR(Out, ISource, 1.)
             psnr_test += psnr
             print("%s PSNR %f" % (f, psnr))
+    #synthetic noises
     if opt.real_n == 0 or opt.real_n == 2:
         psnr_test /= len(files_source)
         print("\nPSNR on test data %f" % psnr_test)
