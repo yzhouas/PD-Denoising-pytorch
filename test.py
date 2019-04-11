@@ -211,7 +211,7 @@ def main():
 
         #merging the details and background to balance the effect
         k = opt.k
-        merge_out_numpy = k*out_numpy + (1-k)*max_out_numpy
+        merge_out_numpy = (1-k)*out_numpy + k*max_out_numpy
         merge_out_numpy = merge_out_numpy.astype(np.float32)
         cv2.imwrite(os.path.join(opt.out_dir, file_name + '_pss'+str(pss)+'_k'+str(k)+'.png'), merge_out_numpy[:,:,::-1])
         #If to output DND submission mat file, please uncomment the following lines
