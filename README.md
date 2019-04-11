@@ -92,7 +92,7 @@ python test.py\
  --scale 1\
  --ps 2 --ps_scale 2\
  --real 1\
- --k 1\
+ --k 0\
  --mode MC\
  --color 1\
  --output_map 0\
@@ -111,7 +111,7 @@ bash run_test_on_real_patches.sh
 **NOTE**
 * test_data can be changed to other folder name with your own data.
 * ps can be set to 1 to get the adaptive pixel-shuffle stride. For CCD camera images, it is better to be set to 2.
-* k can be interactively adjusted to balance the details and background, providing a flexibile denoising performance.
+* k can be interactively adjusted to balance the details and background, providing a flexibile denoising performance. k=1 for flat regions, and k=0 for textural details (default). 
 * This version of testing script may cause exceeding memory issues in GPU while testing on large images. A testing_on_full image version will be released soon.
 
 
