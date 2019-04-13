@@ -42,9 +42,9 @@ We follow the submission guideline of DND benchmark to achieve the following res
 ## Citation
 If you think our model and code useful, please cite
 ```
-@article{zhou2019when,
+@article{zhou2019awgn,
   title={When AWGN-based Denoiser Meets Real Noises},
-  author={Zhou, Yuqian and Jiao, Jianbo and Huang, Haibin and Wang, Yang and Wang, Jue, and Shi, Honghui and Huang, Thomas},
+  author={Zhou, Yuqian and Jiao, Jianbo and Huang, Haibin and Wang, Yang and Wang, Jue and Shi, Honghui and Huang, Thomas},
   journal={arXiv preprint arXiv:1904.03485},
   year={2019}
 }
