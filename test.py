@@ -113,6 +113,7 @@ def main():
             Img = pixelshuffle(Img, pss)
         elif opt.ps == 2:
             pss = opt.ps_scale 
+            Img = pixelshuffle(Img, pss)
         Img = img_normalize(np.float32(Img))
 
         #Clean Image Tensor for evaluation
