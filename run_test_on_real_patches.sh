@@ -2,7 +2,7 @@ python test.py\
  --scale 1\
  --ps 2 --ps_scale 2\
  --real 1\
- --k 1\
+ --k 0\
  --mode MC\
  --color 1\
  --output_map 0\
