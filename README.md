@@ -84,7 +84,7 @@ bash run_train.sh
 * The layer number of estimation model is default 3.
 
 
-### Test the Pretrained model on patches
+### Test the Pretrained Model on Patches
 We provide the pretrained model saved in the logs folder. 
 To replicate the denoising results on real images in DND benchmark and other real images, simply run
 ```
@@ -114,7 +114,7 @@ bash run_test_on_real_patches.sh
 * k can be interactively adjusted to balance the details and background, providing a flexibile denoising performance. k=1 for more focusing on flat regions to get a very smoothed results, and k=0 for obtaining more textural details (default). 
 * Testing on patch will ensure there is no boundary artifacts, but may cause out-of-memory issues on GPU while testing it on large-scale images.
 
-### Test the Pretrained model on full-image
+### Test the Pretrained Model on Full-image
 For large-scale testing images (>1k), simply run
 ```
 python Demo_on_full_image.py\
