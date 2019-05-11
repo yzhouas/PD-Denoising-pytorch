@@ -110,8 +110,8 @@ bash run_test_on_real_patches.sh
 
 **NOTE**
 * test_data can be changed to other folder name with your own data.
-* ps can be set to 1 to get the adaptive pixel-shuffle stride. For CCD camera images, it is better to be set to 2.
-* k can be interactively adjusted to balance the details and background, providing a flexibile denoising performance. k=1 for flat regions, and k=0 for textural details (default). 
+* ps can be set to 1 to get the adaptive pixel-shuffle stride (ps_scale is computed by algorithm in this case). For CCD camera images, it is better to set ps=2(meaning manually setting the ps_scale) and ps_scale=2.
+* k can be interactively adjusted to balance the details and background, providing a flexibile denoising performance. k=1 for more focusing on flat regions to get a very smoothed results, and k=0 for obtaining more textural details (default). 
 * This version of testing script may cause exceeding memory issues in GPU while testing on large images. A testing_on_full image version will be released soon.
 
 
