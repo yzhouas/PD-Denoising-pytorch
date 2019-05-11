@@ -143,6 +143,7 @@ bash run_test_on_full_images.sh
 * ps can be set to 1 to get the adaptive pixel-shuffle stride (ps_scale is computed by algorithm in this case). For CCD camera images, it is better to set ps=2(meaning manually setting the ps_scale) and ps_scale=2.
 * k can be interactively adjusted to balance the details and background, providing a flexibile denoising performance. k=1 for more focusing on flat regions to get a very smoothed results, and k=0 for obtaining more textural details (default). 
 * wbin is the cropped window size for denoising (defaultly set to 512). One can adjust this value to 300 or 256 to ensure there is no out-of-memory issues. But it will both decrease the efficiency and may cause boundary artifacts. 
+* To ensure the uniform effect of the whole images, we assume all the patches share the same denoisng settings.
 * We provide the self-collected beijing dataset for evaluation.
 
 ### Embeded PD idea to Existing Denoisers
