@@ -78,7 +78,7 @@ def visual_va2np(Out, mode=1, ps=0, pss=1, scal=1, rescale=0, w=10, h=10, c=3, r
         out_numpy = reverse_pixelshuffle(out_numpy, pss, refill, refill_img, refill_ind)
     if rescale == 1:
         out_numpy = cv2.resize(out_numpy, (h, w))
-        print(out_numpy.shape)
+        #print(out_numpy.shape)
     return out_numpy
 
 def temp_ps_4comb(Out, In):
