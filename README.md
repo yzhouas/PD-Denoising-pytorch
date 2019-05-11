@@ -84,7 +84,7 @@ bash run_train.sh
 * The layer number of estimation model is default 3.
 
 
-### Test on Pretrained model
+### Test the Pretrained model on patches
 We provide the pretrained model saved in the logs folder. 
 To replicate the denoising results on real images in DND benchmark and other real images, simply run
 ```
@@ -112,7 +112,41 @@ bash run_test_on_real_patches.sh
 * test_data can be changed to other folder name with your own data.
 * ps can be set to 1 to get the adaptive pixel-shuffle stride (ps_scale is computed by algorithm in this case). For CCD camera images, it is better to set ps=2(meaning manually setting the ps_scale) and ps_scale=2.
 * k can be interactively adjusted to balance the details and background, providing a flexibile denoising performance. k=1 for more focusing on flat regions to get a very smoothed results, and k=0 for obtaining more textural details (default). 
-* This version of testing script may cause exceeding memory issues in GPU while testing on large images. A testing_on_full image version will be released soon.
+* Testing on patch will ensure there is no boundary artifacts, but may cause out-of-memory issues on GPU while testing it on large-scale images.
+
+### Test the Pretrained model on full-image
+For large-scale testing images (>1k), simply run
+```
+python Demo_on_full_image.py\
+ --scale 1\
+ --wbin 512\
+ --ps 2 --ps_scale 2\
+ --real 1\
+ --k 0\
+ --mode MC\
+ --color 1\
+ --output_map 0\
+ --zeroout 0 --keep_ind 0\
+ --num_of_layers 20\
+ --delog logs/logs_color_MC_AWGN_RVIN\
+ --cond 1 --refine 0 --refine_opt 1\
+ --test_data beijing\
+ --out_dir results/beijing
+```
+or simiply run,
+```
+bash run_test_on_full_images.sh
+```
+
+**NOTE**
+* test_data can be changed to other folder name with your own data.
+* ps can be set to 1 to get the adaptive pixel-shuffle stride (ps_scale is computed by algorithm in this case). For CCD camera images, it is better to set ps=2(meaning manually setting the ps_scale) and ps_scale=2.
+* k can be interactively adjusted to balance the details and background, providing a flexibile denoising performance. k=1 for more focusing on flat regions to get a very smoothed results, and k=0 for obtaining more textural details (default). 
+* wbin is the cropped window size for denoising (defaultly set to 512). One can adjust this value to 300 or 256 to ensure there is no out-of-memory issues. But it will both decrease the efficiency and may cause boundary artifacts. 
+* We provide the self-collected beijing dataset for evaluation.
+
+### Embeded PD idea to Existing Denoisers
+PD methods can be embedded into other deep learning based AWGN-trained denoiser, or other traditional denoising methds. It will further improve the performance of them. The codes (pytorch and matlab) will be released soon.
 
 
 ## Acknowledgments
