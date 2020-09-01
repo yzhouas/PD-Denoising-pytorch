@@ -394,20 +394,7 @@ def generate_noisy(image, noise_type, noise_level_list=0, sigma_s=20, sigma_c=40
             noisy_chn[ prob_map < noise_level_list[chn] ] = noise_map[ prob_map < noise_level_list[chn] ]
 
     elif noise_type == 2:
-        #sigma_s = np.random.uniform(0.0, 0.16, (3,))
-        #sigma_c = np.random.uniform(0.0, 0.06, (3,))
-        sigma_c = [sigma_c]*3
-        sigma_s = [sigma_s]*3
-        sigma_s = np.reshape(sigma_s, (1, 1, c))  #reshape the sigma factor to [1,1,c] to multiply with the image
-        noise_s_map = np.multiply(sigma_s, image)  #according to x or temp_x?? (according to clean image or irradience)
-        #print(noise_s_map)           # different from the official code, here we use the original clean image x to compute the variance
-        noise_s = np.random.randn(w, h, c) * noise_s_map  #use the new variance to shift the normal distribution
-        noisy = image + noise_s
-        #add signal_independent noise to L 
-        noise_c = np.zeros((w, h, c))
-        for chn in range(3):
-            noise_c [:, :, chn] = np.random.normal(0, sigma_c[chn], (w, h))
-        noisy = noisy + noise_c
+        pass
 
     return noisy
 
